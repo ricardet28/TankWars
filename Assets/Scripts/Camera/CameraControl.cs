@@ -2,16 +2,16 @@
 
 public class CameraControl : MonoBehaviour
 {
-    public float m_DampTime = 0.2f;                 
+    public float m_DampTime = 0.2f; //kind of smooth                
     public float m_ScreenEdgeBuffer = 4f;           
     public float m_MinSize = 6.5f;                  
-    [HideInInspector] public Transform[] m_Targets; 
+    /*[HideInInspector]*/ public Transform[] m_Targets; 
 
 
     private Camera m_Camera;                        
     private float m_ZoomSpeed;                      
     private Vector3 m_MoveVelocity;                 
-    private Vector3 m_DesiredPosition;              
+    private Vector3 m_DesiredPosition;        //average between the targets   
 
 
     private void Awake()
@@ -42,17 +42,17 @@ public class CameraControl : MonoBehaviour
 
         for (int i = 0; i < m_Targets.Length; i++)
         {
-            if (!m_Targets[i].gameObject.activeSelf)
+            if (!m_Targets[i].gameObject.activeSelf)//if the target is not active.
                 continue;
 
-            averagePos += m_Targets[i].position;
-            numTargets++;
+            averagePos += m_Targets[i].position;//sum target's positions.
+            numTargets++;//count target number +1 .
         }
 
         if (numTargets > 0)
-            averagePos /= numTargets;
+            averagePos /= numTargets;//divide the sum of the target's positions by the count target number.
 
-        averagePos.y = transform.position.y;
+        averagePos.y = transform.position.y; // we dont want to change the y axis.
 
         m_DesiredPosition = averagePos;
     }
@@ -67,33 +67,35 @@ public class CameraControl : MonoBehaviour
 
     private float FindRequiredSize()
     {
-        Vector3 desiredLocalPos = transform.InverseTransformPoint(m_DesiredPosition);
+        Vector3 desiredLocalPos = transform.InverseTransformPoint(m_DesiredPosition); //local position to refeer the size of the ort. camera.. We obtain it from the desired DISTANCE position.
 
         float size = 0f;
 
         for (int i = 0; i < m_Targets.Length; i++)
         {
-            if (!m_Targets[i].gameObject.activeSelf)
+            if (!m_Targets[i].gameObject.activeSelf)//if the target does not exist -> continue, we dont want it.
                 continue;
 
-            Vector3 targetLocalPos = transform.InverseTransformPoint(m_Targets[i].position);
+            //else... if exists...
 
-            Vector3 desiredPosToTarget = targetLocalPos - desiredLocalPos;
+            Vector3 targetLocalPos = transform.InverseTransformPoint(m_Targets[i].position);// local pos. of the target.
 
-            size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.y));
+            Vector3 desiredPosToTarget = targetLocalPos - desiredLocalPos;//desired local pos. to target. --- desired position respect the target
 
-            size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.x) / m_Camera.aspect);
+            size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.y));//max between the current size and the y's desired position respect the target.
+
+            size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.x) / m_Camera.aspect);//max between the upper max or the x's desired position respect the target divided by the aspect... REMEMBER SIZE = DISTANCE / SIZE
         }
         
-        size += m_ScreenEdgeBuffer;
+        size += m_ScreenEdgeBuffer; //sum the offset to the size
 
-        size = Mathf.Max(size, m_MinSize);
+        size = Mathf.Max(size, m_MinSize); //check if the size is lower than the minSize. In that case, choose the max value -> minSize. If it is not, check the size.
 
         return size;
     }
 
 
-    public void SetStartPositionAndSize()
+    public void SetStartPositionAndSize()//for the first time...
     {
         FindAveragePosition();
 
