@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-[Serializable]
+[Serializable]//if there is any reference of this, show it in the inspector.
 public class TankManager
 {
     public Color m_PlayerColor;            
