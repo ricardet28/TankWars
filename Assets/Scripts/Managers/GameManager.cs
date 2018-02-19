@@ -10,7 +10,8 @@ public class GameManager : MonoBehaviour
     public float m_EndDelay = 3f;           
     public CameraControl m_CameraControl;   
     public Text m_MessageText;              
-    public GameObject m_TankPrefab;         
+    public GameObject m_TankPrefab;
+
     public TankManager[] m_Tanks;           
 
 
@@ -48,12 +49,12 @@ public class GameManager : MonoBehaviour
     private void SetCameraTargets()
     {
         Transform[] targets = new Transform[m_Tanks.Length];
-
+        int aux;
         for (int i = 0; i < targets.Length; i++)
         {
             targets[i] = m_Tanks[i].m_Instance.transform;
+            aux = i;
         }
-
         m_CameraControl.m_Targets = targets;
     }
 

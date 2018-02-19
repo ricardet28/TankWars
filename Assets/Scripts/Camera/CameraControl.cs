@@ -17,6 +17,7 @@ public class CameraControl : MonoBehaviour
     private void Awake()
     {
         m_Camera = GetComponentInChildren<Camera>();
+        
     }
 
 
