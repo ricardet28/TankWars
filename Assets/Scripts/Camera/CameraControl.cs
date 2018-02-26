@@ -50,6 +50,8 @@ public class CameraControl : MonoBehaviour
             numTargets++;//count target number +1 .
         }
 
+        
+
         if (numTargets > 0)
             averagePos /= numTargets;//divide the sum of the target's positions by the count target number.
 
