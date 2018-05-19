@@ -20,9 +20,13 @@ namespace Complete
         private float m_OriginalPitch;              // The pitch of the audio source at the start of the scene.
         private ParticleSystem[] m_particleSystems; // References to all the particles systems used by the Tanks
 
+        public GameObject ourTurret;
+        public int floorMask;
+
         private void Awake ()
         {
             m_Rigidbody = GetComponent<Rigidbody> ();
+            floorMask = LayerMask.GetMask("Ground");
         }
 
 
@@ -77,6 +81,7 @@ namespace Complete
             m_TurnInputValue = Input.GetAxis (m_TurnAxisName);
 
             EngineAudio ();
+            AimTurretToMouse();
         }
 
 
@@ -113,9 +118,9 @@ namespace Complete
             // Adjust the rigidbodies position and orientation in FixedUpdate.
             Move ();
             Turn ();
+            
         }
-
-
+        
         private void Move ()
         {
             // Create a vector in the direction the tank is facing with a magnitude based on the input, speed and the time between frames.
@@ -136,6 +141,20 @@ namespace Complete
 
             // Apply this rotation to the rigidbody's rotation.
             m_Rigidbody.MoveRotation (m_Rigidbody.rotation * turnRotation);
+        }
+
+        private void AimTurretToMouse()
+        {
+            Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(camRay, out hit, Mathf.Infinity, floorMask))
+            {
+                Vector3 playerToMouse = hit.point - ourTurret.transform.position;
+                playerToMouse.y = 0f;
+                Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
+                ourTurret.GetComponent<Rigidbody>().MoveRotation(newRotation);
+            }
         }
     }
 }

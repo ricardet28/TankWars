@@ -22,6 +22,7 @@ namespace Complete
         private TankManager m_RoundWinner;          // Reference to the winner of the current round.  Used to make an announcement of who won.
         private TankManager m_GameWinner;           // Reference to the winner of the game.  Used to make an announcement of who won.
 
+        public Transform baseTank;
 
         private void Start()
         {
@@ -54,15 +55,15 @@ namespace Complete
         private void SetCameraTargets()
         {
             // Create a collection of transforms the same size as the number of tanks.
-            Transform[] targets = new Transform[m_Tanks.Length];
+            Transform[] targets = new Transform[m_Tanks.Length + 1];
 
             // For each of these transforms...
-            for (int i = 0; i < targets.Length; i++)
+            for (int i = 0; i < targets.Length - 1; i++)
             {
                 // ... set it to the appropriate tank transform.
                 targets[i] = m_Tanks[i].m_Instance.transform;
             }
-
+            targets[targets.Length - 1] = baseTank;
             // These are the targets the camera should follow.
             m_CameraControl.m_Targets = targets;
         }
