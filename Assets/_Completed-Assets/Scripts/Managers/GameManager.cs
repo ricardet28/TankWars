@@ -23,7 +23,16 @@ namespace Complete
         private TankManager m_GameWinner;           // Reference to the winner of the game.  Used to make an announcement of who won.
 
         public Transform baseTank;
+        private GameObject blackTank;
+        public GameObject NPCTank;
+        public Transform NPCSPawn;
+        public static GameManager instance = null;
 
+        private void Awake()
+        {
+            instance = this;
+        }
+        
         private void Start()
         {
             // Create the delays so they only have to be made once.
@@ -49,21 +58,26 @@ namespace Complete
                 m_Tanks[i].m_PlayerNumber = i + 1;
                 m_Tanks[i].Setup();
             }
+            blackTank = Instantiate(NPCTank, NPCSPawn.position, Quaternion.identity);
+            blackTank.GetComponent<NPCTankMovement>().enabled = false;
+            blackTank.GetComponent<NPCTankShooting>().enabled = false;
+            blackTank.GetComponent<TankHealth>().enabled = false;
         }
 
 
         private void SetCameraTargets()
         {
             // Create a collection of transforms the same size as the number of tanks.
-            Transform[] targets = new Transform[m_Tanks.Length + 1];
+            Transform[] targets = new Transform[m_Tanks.Length + 2];
 
             // For each of these transforms...
-            for (int i = 0; i < targets.Length - 1; i++)
+            for (int i = 0; i < targets.Length - 2; i++)
             {
                 // ... set it to the appropriate tank transform.
                 targets[i] = m_Tanks[i].m_Instance.transform;
             }
             targets[targets.Length - 1] = baseTank;
+            targets[targets.Length - 2] = NPCTank.transform;
             // These are the targets the camera should follow.
             m_CameraControl.m_Targets = targets;
         }
@@ -244,24 +258,39 @@ namespace Complete
             {
                 m_Tanks[i].Reset();
             }
+
+            blackTank.transform.position = NPCSPawn.transform.position;
+            blackTank.SetActive(false);
+            blackTank.SetActive(true);
         }
 
 
         private void EnableTankControl()
         {
+            blackTank.GetComponent<NPCTankMovement>().enabled = true;
+            blackTank.GetComponent<NPCTankShooting>().enabled = true;
+            blackTank.GetComponent<TankHealth>().enabled = true;
+
             for (int i = 0; i < m_Tanks.Length; i++)
             {
                 m_Tanks[i].EnableControl();
             }
+            
+
         }
 
 
         private void DisableTankControl()
         {
+            blackTank.GetComponent<NPCTankMovement>().enabled = false;
+            blackTank.GetComponent<NPCTankShooting>().enabled = false;
+            blackTank.GetComponent<TankHealth>().enabled = false;
             for (int i = 0; i < m_Tanks.Length; i++)
             {
                 m_Tanks[i].DisableControl();
             }
+            
+
         }
     }
 }

@@ -22,6 +22,13 @@ public class GameManager : MonoBehaviour
 
     public GameObject blackTank;
 
+    public static GameManager instance = null;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
     private void Start()
     {
         Debug.Log(m_Tanks.Length);
